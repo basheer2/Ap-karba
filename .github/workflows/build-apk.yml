@@ -1,0 +1,80 @@
+name: Build Kahrabani Android APK (Kahrabani-Debug-APK)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'نوع البناء (Build Type)'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+          - debug
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    name: Build & Package Kahrabani-Debug-APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: 📥 استنساخ الكود (Checkout Code)
+        uses: actions/checkout@v4
+
+      - name: ☕ إعداد بيئة جافا (Set up JDK 17)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: 🤖 إعداد Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: 🔐 منح صلاحيات التشغيل لـ Gradle Wrapper
+        run: |
+          chmod +x ./gradlew || true
+
+      - name: ⚙️ بناء حزمة APK التجريبية (Assemble Debug APK)
+        run: |
+          ./gradlew assembleDebug --stacktrace --no-daemon
+
+      - name: 📦 تجهيز وإعادة تسمية ملف APK إلى Kahrabani-Debug-APK.apk
+        run: |
+          mkdir -p release-output
+          if [ -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp "app/build/outputs/apk/debug/app-debug.apk" "release-output/Kahrabani-Debug-APK.apk"
+          else
+            find app/build/outputs/apk -name "*.apk" -exec cp {} "release-output/Kahrabani-Debug-APK.apk" \;
+          fi
+          
+          cd release-output
+          sha256sum Kahrabani-Debug-APK.apk > Kahrabani-Debug-APK.apk.sha256
+          echo "تم إنشاء الملف بنجاح:"
+          ls -lh Kahrabani-Debug-APK.apk
+
+      - name: 🚀 رفع ملف Kahrabani-Debug-APK كحزمة قابلة للتحميل (Upload Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kahrabani-Debug-APK
+          path: release-output/Kahrabani-Debug-APK.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: 📝 ملخص البناء في صفحة GitHub Actions
+        run: |
+          echo "### ⚡ تم بناء تطبيق كهرباني بنجاح! 🚀" >> $GITHUB_STEP_SUMMARY
+          echo "- **اسم الملف المخرج:** \`Kahrabani-Debug-APK.apk\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **الحجم:** $(ls -lh release-output/Kahrabani-Debug-APK.apk | awk '{print $5}')" >> $GITHUB_STEP_SUMMARY
+          echo "- **بصمة SHA-256:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          cat release-output/Kahrabani-Debug-APK.apk.sha256 >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "يمكنك تحميل الملف فوراً من قسم **Artifacts** في أعلى صفحة الـ Action." >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,32 @@
+{
+  "id": "/",
+  "name": "كهرباني - إدارة المقاول الكهربائي",
+  "short_name": "كهرباني",
+  "description": "نظام إدارة المقاول الكهربائي المتكامل - إدارة المشاريع، العمال، العقود، الفواتير، الحسابات والتقارير",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#f59e0b",
+  "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

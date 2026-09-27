@@ -1,0 +1,6 @@
+{
+  "name": "KahrabaniContractor - نظام كهرباني للمقاولات الكهربائية",
+  "description": "نظام إدارة المقاول الكهربائي المتكامل - إدارة المشاريع، العمال، العقود، الفواتير، الحسابات والتقارير",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
